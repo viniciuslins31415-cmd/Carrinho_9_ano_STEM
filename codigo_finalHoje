@@ -1,0 +1,42 @@
+#include <AFMotor_R4.h>
+
+#include <Servo.h>
+
+Servo servoX;
+Servo servoY;
+
+// Motor na porta M1
+AF_DCMotor motor(1);
+
+int botao = 2;
+
+int valorX, valorY;
+
+void setup() {
+  servoX.attach(9);
+  servoY.attach(10);
+  pinMode(botao, INPUT_PULLUP);
+  motor.setSpeed(200); // velocidade (0–255)
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Leitura joystick
+  valorX = analogRead(A2);
+  valorY = analogRead(A3);
+
+  int anguloX = map(valorX, 0, 1023, 0, 60);
+  int anguloY = map(valorY, 0, 1023, 0, 60);
+
+  servoX.write(anguloX);
+  servoY.write(anguloY);
+
+  // Leitura botão
+  int estadoBotao = digitalRead(botao);
+
+  if (estadoBotao == LOW) {
+    motor.run(FORWARD); // liga motor
+  } else {
+    motor.run(RELEASE); // desliga motor
+  }
+}
